@@ -10,11 +10,11 @@ from plot import plot_learning_curves, plot_model_metrics
 
 
 
-def return_best_hyperparameters_tree_based(df, differentialColumn):
+def return_best_hyperparameters_tree_based(df, target_feature):
     """Ricerca dei migliori iperparametri dei modelli ad albero, tramite GridSearch e Cross Validation"""
 
-    X = df.drop(differentialColumn, axis=1).to_numpy()
-    y = df[differentialColumn].to_numpy()
+    X = df.drop(target_feature, axis=1).to_numpy()
+    y = df[target_feature].to_numpy()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     rfc = RandomForestClassifier()
@@ -77,7 +77,7 @@ def return_best_hyperparameters_tree_based(df, differentialColumn):
 
 
 
-def train_model_kfold_tree_based(df, differentialColumn,metodo):
+def train_model_kfold_tree_based(df, target_feature,metodo):
     """Addestramento dei modelli supervisionati basati ad albero"""
 
     model={
@@ -106,17 +106,17 @@ def train_model_kfold_tree_based(df, differentialColumn,metodo):
 
     print("\nCalcolo degli iperparametri...")
 
-    bestParameters = return_best_hyperparameters_tree_based(df, differentialColumn)
+    bestParameters = return_best_hyperparameters_tree_based(df, target_feature)
 
     print("Ricerca iperparametri terminata")
 
     print("\033[94m"+str(bestParameters)+"\033[0m")
 
-    X = df.drop(differentialColumn, axis=1)
+    X = df.drop(target_feature, axis=1)
     # features =  X.columns
     X = X.to_numpy()
 
-    y = df[differentialColumn].to_numpy()
+    y = df[target_feature].to_numpy()
 
     # inizializzazione dei modelli con iperparametri ottimali trovati
 
@@ -182,9 +182,9 @@ def train_model_kfold_tree_based(df, differentialColumn,metodo):
     model['GradientBoostingClassifier']['f1'] = results_gdb['f1_macro']
     model['GradientBoostingClassifier']['gdb'] = gdb
 
-    plot_learning_curves(dtc, X, y, differentialColumn, 'DecisionTree', metodo)
-    plot_learning_curves(rfc, X, y, differentialColumn, 'RandomForest', metodo)
-    plot_learning_curves(gdb, X, y, differentialColumn, 'GradientBoostingClassifier', metodo)
+    plot_learning_curves(dtc, X, y, target_feature, 'DecisionTree', metodo)
+    plot_learning_curves(rfc, X, y, target_feature, 'RandomForest', metodo)
+    plot_learning_curves(gdb, X, y, target_feature, 'GradientBoostingClassifier', metodo)
 
     mean_metrics_dtc = {
             'accuracy': np.mean(results_dtc['accuracy']),
@@ -215,11 +215,11 @@ def train_model_kfold_tree_based(df, differentialColumn,metodo):
 
 
 
-def return_best_hyperparameters_lg(df, differentialColumn):
+def return_best_hyperparameters_lg(df, target_feature):
     """Ricerca dei migliori iperparametri della regressione logistica, tramite GridSearch e Cross Validation"""
 
-    X = df.drop(differentialColumn, axis=1).to_numpy()
-    y = df[differentialColumn].to_numpy()
+    X = df.drop(target_feature, axis=1).to_numpy()
+    y = df[target_feature].to_numpy()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     reg = LogisticRegression()
@@ -245,7 +245,7 @@ def return_best_hyperparameters_lg(df, differentialColumn):
 
 
 
-def train_model_kfold_lg(df, differentialColumn, metodo):
+def train_model_kfold_lg(df, target_feature, metodo):
     """Addestramento modello supervisionato della regressione logistica"""
 
     model={
@@ -260,17 +260,17 @@ def train_model_kfold_lg(df, differentialColumn, metodo):
 
     print("\nCalcolo degli iperparametri...")
 
-    bestParameters = return_best_hyperparameters_lg(df, differentialColumn)
+    bestParameters = return_best_hyperparameters_lg(df, target_feature)
     
     print("Ricerca iperparametri terminata.")
 
     print("\033[94m"+str(bestParameters)+"\033[0m")
 
-    X = df.drop(differentialColumn, axis=1)
+    X = df.drop(target_feature, axis=1)
     features =  X.columns
     X = X.to_numpy()
 
-    y = df[differentialColumn].to_numpy()
+    y = df[target_feature].to_numpy()
 
 
     reg = LogisticRegression(C=bestParameters['LogisticRegression__C'],
@@ -301,7 +301,7 @@ def train_model_kfold_lg(df, differentialColumn, metodo):
     model['LogisticRegression']['f1'] = (results_reg['f1_macro'])
     model['LogisticRegression']['reg'] = reg
 
-    plot_learning_curves(reg, X, y, differentialColumn, 'LogisticRegression', metodo)
+    plot_learning_curves(reg, X, y, target_feature, 'LogisticRegression', metodo)
 
     mean_metrics_reg = {
             'accuracy': np.mean(results_reg['accuracy']),

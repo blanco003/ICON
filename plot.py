@@ -49,8 +49,6 @@ def plot_learning_curves(model, X, y, differentialColumn, model_name, metodo):
 
 
 
-
-
 def plot_model_metrics(model_name, metric_values, metodo):
     """Grafico a barre che mostra le metriche medie del modello di apprendimento supervisionato,
          con accuracy, precision, recall e f1-score."""
@@ -83,6 +81,7 @@ def plot_model_metrics(model_name, metric_values, metodo):
                  ha='center', fontsize=12, color='black')
 
     plt.savefig(f'plots\metriche_{model_name}_{metodo}.png', dpi=300, bbox_inches='tight')
+
     plt.show()
 
 
@@ -159,7 +158,6 @@ def plot_curves_nn(history,best_params,metodo):
     val_acc = history.history['val_accuracy']
     epochs_range = range(1, best_params['epochs'] + 1)
 
-    
     plt.figure(figsize=(12, 5))
     plt.subplot(1, 2, 1)
     plt.plot(epochs_range, train_loss, label='Train Loss')
@@ -169,7 +167,6 @@ def plot_curves_nn(history,best_params,metodo):
     plt.title('Train vs Validation Loss')
     plt.legend()
 
-   
     plt.subplot(1, 2, 2)
     plt.plot(epochs_range, train_acc, label='Train Accuracy')
     plt.plot(epochs_range, val_acc, label='Validation Accuracy')
@@ -210,4 +207,4 @@ def visualize_aspect_ratio(df, target, metodo):
 
     # salviamo il png
     plt.savefig(f'plots/distribuzione_{target}_{metodo}.png', dpi=300, bbox_inches='tight')
-    plt.show() # mostra il grafico a schermo
+    plt.show() 

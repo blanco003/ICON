@@ -32,11 +32,11 @@ def build_model(units_1, hidden_units_1, hidden_units_2, learning_rate, optimize
     return model
 
 
-def train_neural_network(df, target_featue, metodo):
+def train_neural_network(df, target_feature, metodo):
     """Addestramento rete neurale"""
 
     # divisione dei dati in training e testing, e da training in validation e trainging
-    train_data, test_data, train_targets, test_targets = train_test_split(df, target_featue, test_size=0.3, random_state=42)
+    train_data, test_data, train_targets, test_targets = train_test_split(df, target_feature, test_size=0.3, random_state=42)
     train_data, validation_data, train_targets, validation_targets = train_test_split(train_data, train_targets, test_size=0.2, random_state=42)
 
     # parametri da ricerca con gridsearch
@@ -50,15 +50,11 @@ def train_neural_network(df, target_featue, metodo):
         'epochs': [50],
     }
 
-
-
     model = KerasClassifier(model=build_model,verbose=1)
 
     # Grid Search con Cross-Validation
     grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, verbose=1)
     grid_search.fit(train_data, train_targets)
-
-
 
     print("\nConfigurazioni provate e corrispondente score : ")
 
@@ -66,15 +62,13 @@ def train_neural_network(df, target_featue, metodo):
     for params, score in zip(grid_search.cv_results_['params'], grid_search.cv_results_['mean_test_score']):
         print(f"Config: {params}, Score: {score}")
 
-
-    # Migliori parametri trovati
+    # Migliore configurazione trovata
     best_params = grid_search.best_params_
     print(f"\nMiglior numero di neuroni nel primo layer: {best_params['model__units_1']}")
     print(f"Miglior numero di unità nel 1 hidden layers: {best_params['model__hidden_units_1']}")
     print(f"Miglior numero di unità nel 2 hidden layers: {best_params['model__hidden_units_2']}")
     print(f"Miglior learning rate: {best_params['model__learning_rate']}")
     print(f"Miglior optimizer: {best_params['model__optimizer']}")
-
 
     # Valutazione sul validation set
     val_predictions = grid_search.predict(validation_data)
@@ -86,10 +80,7 @@ def train_neural_network(df, target_featue, metodo):
     test_preds = np.round(test_preds)
     print('Report di classificazione per il test set:\n', classification_report(test_targets, test_preds))
 
-
-
-
-    # Ricrea il modello con i migliori parametri trovati
+    # modello con i migliori parametri trovati
     best_model = build_model(
         units_1=best_params['model__units_1'],
         hidden_units_1=best_params['model__hidden_units_1'],
@@ -98,7 +89,6 @@ def train_neural_network(df, target_featue, metodo):
         optimizer=best_params['model__optimizer']
     )
 
-    # Addestra il modello con i dati di training e validazione
     history = best_model.fit(
         train_data, train_targets,
         validation_data=(validation_data, validation_targets),
@@ -106,7 +96,6 @@ def train_neural_network(df, target_featue, metodo):
         batch_size=best_params['batch_size'],
         verbose=1
     )
-
 
     plot_curves_nn(history,best_params,metodo)
 
